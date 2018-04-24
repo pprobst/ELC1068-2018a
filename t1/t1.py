@@ -20,12 +20,12 @@ def arqs_ordenados(N):
     # de input
     while len(in_slice) > 0:
         with open("outfile_{}.txt".format(i), 'w') as f:
-            f.write(''.join(sorted(in_slice)))
+            f.write(" ".join(sorted(in_slice.lower().split())))
 
         i += 1
         in_slice = inpt[i*N:i*N + N]
 
-N = 100 # RAM comporta N registros de dados
+N = 200 # RAM comporta N registros de dados
 #input_arq = open(str(sys.argv[1]), 'r') # leitura do arquivo de input
 #input_data = input_arq.read() # conteúdo do arquivo de input
 
