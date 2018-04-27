@@ -17,8 +17,8 @@ def arqs_ordenados(N):
     ultima_palavra = None
     i = 0
 
-    # Grava N bytes nos arquivos de output, continuando até o fim do arquivo
-    # de input
+    # grava N bytes nos arquivos de saída, continuando até o fim do arquivo
+    # de entrada
     while len(fatia) > 0:
         with open("outfile_{}.txt".format(i), 'w') as f_out:
             if (i != 0):
@@ -37,10 +37,17 @@ def arqs_ordenados(N):
 # Junta os arquivos de saída ordenados em um único arquivo final utilizando
 # fila de prioridade (ou heap queue)
 def merge(num_arqs, k):
-    # não funciona
-    final = heapq.merge(pega_arquivos(num_arqs))
-    for elemento in final:
-        print(str(elemento))
+    arquivos = pega_arquivos(num_arqs)
+    conteudo = []
+    # armazena as listas de palavras dos arquivos gerados em uma lista
+    for arquivo in arquivos:
+        #f = open(arquivo, 'r')
+        conteudo.append(arquivo.read().split())
+
+    heap = heapify(conteudo)
+    #final = heapq.merge(pega_arquivos(num_arqs))
+    #for elemento in final:
+    #    print(str(elemento))
      # with open("final.txt", 'w', k) as arq_final:
      #   for elemento in final:
      #       arq_final.writelines(elemento)
@@ -53,14 +60,21 @@ def pega_arquivos(num_arqs):
 
     return arquivos
 
-# Tira os sinais de pontuação de uma string
+# Retira os sinais de pontuação de uma string
 def tira_pontuacao(s) :
     return "".join(c for c in s if c not in punctuation)
 
-N = 200 # memória comporta N registros de dados
+N = 200 # memória comporta N bytes para leitura
 #input_arq = open(str(sys.argv[1]), 'r') # leitura do arquivo de input
 #input_data = input_arq.read() # conteúdo do arquivo de input
 
 mergesort_externo(N)
 #arqs_ordenados(N)
 #input_arq.close()
+
+
+# Lista de referências:
+# https://en.wikipedia.org/wiki/Merge_algorithm
+# https://en.wikipedia.org/wiki/External_sorting
+# https://www.geeksforgeeks.org/merge-k-sorted-arrays/ (C++)
+# https://www.youtube.com/watch?v=sVGbj1zgvWQ (C)
