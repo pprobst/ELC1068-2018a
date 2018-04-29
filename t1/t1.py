@@ -38,13 +38,24 @@ def arqs_ordenados(N):
 # fila de prioridade (ou heap queue)
 def merge(num_arqs, k):
     arquivos = pega_arquivos(num_arqs)
-    conteudo = []
-    # armazena as listas de palavras dos arquivos gerados em uma lista
-    for arquivo in arquivos:
-        #f = open(arquivo, 'r')
-        conteudo.append(arquivo.read().split())
+    conteudo = [f.readline().split() for f in arquivos]
 
-    heap = heapify(conteudo)
+    final = open("final.txt", 'w')
+    final.writelines('\n'.join(heapq.merge(*conteudo)))
+
+    #while len(arquivos) > 0:
+    #    menor = min(filter(lambda x: x != "", strings))
+    #    menor_posicao = conteudo.index(menor)
+    #    final.write(menor)
+    #    conteudo[menor_posicao] = arquivos[menor_posicao].readline()
+    #    if conteudo[menor_posicao] == "":
+    #        arquivos[menor_posicao].close()
+    #        arquivos.pop(menor_posicao)
+    #        conteudo.pop(menor_posicao)
+
+    final.close()
+
+    #heap = heapify(conteudo)
     #final = heapq.merge(pega_arquivos(num_arqs))
     #for elemento in final:
     #    print(str(elemento))
@@ -76,5 +87,7 @@ mergesort_externo(N)
 # Lista de referências:
 # https://en.wikipedia.org/wiki/Merge_algorithm
 # https://en.wikipedia.org/wiki/External_sorting
+# https://en.wikipedia.org/wiki/K-way_merge_algorithm
+# https://stackoverflow.com/questions/36379360/is-there-a-way-to-simplify-this-n-way-merge-in-python
 # https://www.geeksforgeeks.org/merge-k-sorted-arrays/ (C++)
 # https://www.youtube.com/watch?v=sVGbj1zgvWQ (C)
