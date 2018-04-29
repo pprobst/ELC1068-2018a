@@ -4,11 +4,10 @@ from string import punctuation
 
 def mergesort_externo(N):
     num_arqs = arqs_ordenados(N) # número de arquivos gerados
-    k = int(N / (num_arqs+1)); # tamanho dos buffers (1 de saída, k de entrada)
     #apaga(arq) # apaga o arquivo original
-    merge(num_arqs, k) # faz o merge dos num_arqs com k elementos
+    merge(num_arqs) # faz o merge dos num_arqs utilizando uma heap queue
 
-    #for i in range(num_arq):
+    #for i in range(num_arqs):
     # apaga arquivos temporários
 
 def arqs_ordenados(N):
@@ -35,33 +34,49 @@ def arqs_ordenados(N):
     return i+1
 
 # Junta os arquivos de saída ordenados em um único arquivo final utilizando
-# fila de prioridade (ou heap queue)
-def merge(num_arqs, k):
+# fila de prioridade (ou heap queue).
+def merge(num_arqs):
     arquivos = pega_arquivos(num_arqs)
     conteudo = [f.readline().split() for f in arquivos]
 
     final = open("final.txt", 'w')
-    final.writelines('\n'.join(heapq.merge(*conteudo)))
-
-    #while len(arquivos) > 0:
-    #    menor = min(filter(lambda x: x != "", strings))
-    #    menor_posicao = conteudo.index(menor)
-    #    final.write(menor)
-    #    conteudo[menor_posicao] = arquivos[menor_posicao].readline()
-    #    if conteudo[menor_posicao] == "":
-    #        arquivos[menor_posicao].close()
-    #        arquivos.pop(menor_posicao)
-    #        conteudo.pop(menor_posicao)
+    #final.writelines('\n'.join(heapq.merge(*conteudo)))
+    final.writelines('\n'.join(kmerge_manual(*conteudo)))
 
     final.close()
 
-    #heap = heapify(conteudo)
-    #final = heapq.merge(pega_arquivos(num_arqs))
-    #for elemento in final:
-    #    print(str(elemento))
-     # with open("final.txt", 'w', k) as arq_final:
-     #   for elemento in final:
-     #       arq_final.writelines(elemento)
+# Versão simplificada de heapq.merge, que recebe uma lista de listas ordenadas
+# e junta tudo num único iterável ordenado
+def kmerge_manual(*conteudo):
+    _heappop, _heapreplace, _StopIteration = heapq.heappop, heapq.heapreplace, StopIteration
+    _iter = iter
+
+    h = []
+    h_append = h.append
+
+    for itnum, it in enumerate(map(iter, conteudo)):
+        try:
+            next = it.__next__
+            h_append([next(), itnum, next])
+
+        except _StopIteration:
+            pass
+
+    heapq.heapify(h) # "heapifica" h
+
+    while True:
+        try:
+            while True:
+                v, itnum, next = s = h[0] # IndexError quando h está vazia
+                yield v
+                s[0] = next() # StopIteration quando exaustada
+                _heapreplace(h, s) # restaura a heap
+
+        except _StopIteration:
+            _heappop(h) # remove iterador vazio
+
+        except IndexError:
+            return
 
 # Armazena os arquivos de saída abertos em uma lista
 def pega_arquivos(num_arqs):
@@ -84,10 +99,10 @@ mergesort_externo(N)
 #input_arq.close()
 
 
-# Lista de referências:
+# Referências:
 # https://en.wikipedia.org/wiki/Merge_algorithm
 # https://en.wikipedia.org/wiki/External_sorting
 # https://en.wikipedia.org/wiki/K-way_merge_algorithm
 # https://stackoverflow.com/questions/36379360/is-there-a-way-to-simplify-this-n-way-merge-in-python
-# https://www.geeksforgeeks.org/merge-k-sorted-arrays/ (C++)
+# https://hg.python.org/cpython/file/default/Lib/heapq.py#l314
 # https://www.youtube.com/watch?v=sVGbj1zgvWQ (C)
