@@ -30,11 +30,13 @@ def arqs_ordenados(N, nome_arq):
         with open("outfile_{}.txt".format(i), 'w') as f_out:
             #if (i != 0):
             #    fatia = ultima_palavra + fatia
+            fatia = tira_pontuacao(fatia)
             string_lst = fatia.lower().split()
             qcksort(string_lst)
             #ultima_palavra = string_lst.pop()
             string_ordenada = '\n'.join(string_lst)
-            f_out.write(tira_pontuacao(string_ordenada))
+            #f_out.write(tira_pontuacao(string_ordenada))
+            f_out.write(string_ordenada)
 
         i += 1
         fatia = f_in.read(N+N) # lê mais N bytes a partir do anterior
@@ -50,6 +52,8 @@ def merge(num_arqs):
     with ExitStack() as stack, open('final.txt', 'w') as final:
         arquivos = [stack.enter_context(open(arq)) for arq in arquivos]
         final.writelines(kmerge_manual(*arquivos))
+        #for line in heapq.merge(*arquivos):
+        #    final.write(line)
 
 # Versão simplificada de heapq.merge, que recebe iteráveis ordenados e junta tudo
 # num único iterador sobre os valores ordenados
