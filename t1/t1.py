@@ -1,20 +1,23 @@
 import sys
+import os
 import heapq
 from quicksort import qcksort
 from string import punctuation
 
-def mergesort_externo(N):
-    num_arqs = arqs_ordenados(N) # número de arquivos gerados
+def mergesort_externo(N, nome_arq):
+    num_arqs = arqs_ordenados(N, nome_arq) # número de arquivos gerados
     #apaga(arq) # apaga o arquivo original
     merge(num_arqs) # faz o merge dos num_arqs utilizando uma heap queue
 
-    #for i in range(num_arqs):
-    # apaga arquivos temporários
+    # remove arquivos de saída gerados
+    for item in os.listdir():
+        if item.startswith("out"):
+            os.remove(item)
 
 # Retorna o número de arquivos de saída ordenados gerados pelo arquivo de
 # entrada
-def arqs_ordenados(N):
-    f_in = open("keatsm.txt", 'r')
+def arqs_ordenados(N, nome_arq):
+    f_in = open(nome_arq, 'r')
     fatia = f_in.read(N)
     ultima_palavra = None
     i = 0
@@ -41,10 +44,11 @@ def arqs_ordenados(N):
 # fila de prioridade (ou heap queue)
 def merge(num_arqs):
     arquivos = pega_arquivos(num_arqs)
-    conteudo = [f.readline().split() for f in arquivos]
+    conteudo = [f.readline().split() for f in arquivos] # MELHORAR ISSO!
 
     final = open("final.txt", 'w')
     #final.writelines('\n'.join(heapq.merge(*conteudo)))
+    print(conteudo)
     final.writelines('\n'.join(kmerge_manual(*conteudo)))
 
     final.close()
@@ -95,13 +99,16 @@ def tira_pontuacao(s) :
     return "".join(c for c in s if c not in punctuation)
 
 def main():
-    N = 200 # memória comporta N bytes para leitura
-    #input_arq = open(str(sys.argv[1]), 'r') # leitura do arquivo de input
-    #input_data = input_arq.read() # conteúdo do arquivo de input
+    try:
+        nome_arq = sys.argv[1]
+    except IndexError:
+        print("Insira o nome do arquivo de entrada como argumento!\n" +
+              "ex.: python t1.py nome_do_arquivo.txt")
+        sys.exit()
 
-    mergesort_externo(N)
-    #arqs_ordenados(N)
-    #input_arq.close()
+    N = int(input("Insira os N bytes de leitura suportados pela memória: "))
+
+    mergesort_externo(N, nome_arq)
 
 if __name__ == '__main__':
     main()
