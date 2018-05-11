@@ -1,5 +1,6 @@
 import sys
 import heapq
+from quicksort import qcksort
 from string import punctuation
 
 def mergesort_externo(N):
@@ -10,6 +11,8 @@ def mergesort_externo(N):
     #for i in range(num_arqs):
     # apaga arquivos temporários
 
+# Retorna o número de arquivos de saída ordenados gerados pelo arquivo de
+# entrada
 def arqs_ordenados(N):
     f_in = open("keatsm.txt", 'r')
     fatia = f_in.read(N)
@@ -22,9 +25,10 @@ def arqs_ordenados(N):
         with open("outfile_{}.txt".format(i), 'w') as f_out:
             if (i != 0):
                 fatia = ultima_palavra + fatia
-            stringzinha = fatia.lower().split()
-            ultima_palavra = stringzinha.pop()
-            string_ordenada = " ".join(sorted(stringzinha))
+            string_lst = fatia.lower().split()
+            qcksort(string_lst)
+            ultima_palavra = string_lst.pop()
+            string_ordenada = " ".join(string_lst)
             f_out.write(tira_pontuacao(string_ordenada))
 
         i += 1
@@ -34,7 +38,7 @@ def arqs_ordenados(N):
     return i+1
 
 # Junta os arquivos de saída ordenados em um único arquivo final utilizando
-# fila de prioridade (ou heap queue).
+# fila de prioridade (ou heap queue)
 def merge(num_arqs):
     arquivos = pega_arquivos(num_arqs)
     conteudo = [f.readline().split() for f in arquivos]
@@ -78,7 +82,7 @@ def kmerge_manual(*conteudo):
         except IndexError:
             return
 
-# Armazena os arquivos de saída abertos em uma lista
+# Armazena os arquivos de saída abertos (não o conteúdo deles) em uma lista
 def pega_arquivos(num_arqs):
     arquivos = []
     for i in range(num_arqs-1):
@@ -90,19 +94,23 @@ def pega_arquivos(num_arqs):
 def tira_pontuacao(s) :
     return "".join(c for c in s if c not in punctuation)
 
-N = 200 # memória comporta N bytes para leitura
-#input_arq = open(str(sys.argv[1]), 'r') # leitura do arquivo de input
-#input_data = input_arq.read() # conteúdo do arquivo de input
+def main():
+    N = 200 # memória comporta N bytes para leitura
+    #input_arq = open(str(sys.argv[1]), 'r') # leitura do arquivo de input
+    #input_data = input_arq.read() # conteúdo do arquivo de input
 
-mergesort_externo(N)
-#arqs_ordenados(N)
-#input_arq.close()
+    mergesort_externo(N)
+    #arqs_ordenados(N)
+    #input_arq.close()
 
+if __name__ == '__main__':
+    main()
 
 # Referências:
 # https://en.wikipedia.org/wiki/Merge_algorithm
 # https://en.wikipedia.org/wiki/External_sorting
 # https://en.wikipedia.org/wiki/K-way_merge_algorithm
 # https://stackoverflow.com/questions/36379360/is-there-a-way-to-simplify-this-n-way-merge-in-python
+# https://stackoverflow.com/questions/1001569/python-class-to-merge-sorted-files-how-can-this-be-improved
 # https://hg.python.org/cpython/file/default/Lib/heapq.py#l314
 # https://www.youtube.com/watch?v=sVGbj1zgvWQ (C)
