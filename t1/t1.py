@@ -1,21 +1,23 @@
 import sys
 import os
 import heapq
+from contextlib import ExitStack
 from quicksort import qcksort
 from string import punctuation
 
+# Reúne todos os passos para realizar o mergesort externo
 def mergesort_externo(N, nome_arq):
     num_arqs = arqs_ordenados(N, nome_arq) # número de arquivos gerados
-    #apaga(arq) # apaga o arquivo original
     merge(num_arqs) # faz o merge dos num_arqs utilizando uma heap queue
 
-    # remove arquivos de saída gerados
+    # remove arquivos de saída temporários
     for item in os.listdir():
         if item.startswith("out"):
             os.remove(item)
 
-# Retorna o número de arquivos de saída ordenados gerados pelo arquivo de
-# entrada
+    print("Fim!")
+
+# Retorna o número de arquivos de saída ordenados gerados pelo arquivo de entrada
 def arqs_ordenados(N, nome_arq):
     f_in = open(nome_arq, 'r')
     fatia = f_in.read(N)
@@ -26,12 +28,12 @@ def arqs_ordenados(N, nome_arq):
     # de entrada
     while len(fatia) > 0:
         with open("outfile_{}.txt".format(i), 'w') as f_out:
-            if (i != 0):
-                fatia = ultima_palavra + fatia
+            #if (i != 0):
+            #    fatia = ultima_palavra + fatia
             string_lst = fatia.lower().split()
             qcksort(string_lst)
-            ultima_palavra = string_lst.pop()
-            string_ordenada = " ".join(string_lst)
+            #ultima_palavra = string_lst.pop()
+            string_ordenada = '\n'.join(string_lst)
             f_out.write(tira_pontuacao(string_ordenada))
 
         i += 1
@@ -41,17 +43,13 @@ def arqs_ordenados(N, nome_arq):
     return i+1
 
 # Junta os arquivos de saída ordenados em um único arquivo final utilizando
-# fila de prioridade (ou heap queue)
+# fila de prioridade (heap queue)
 def merge(num_arqs):
-    arquivos = pega_arquivos(num_arqs)
-    conteudo = [f.readline().split() for f in arquivos] # MELHORAR ISSO!
+    arquivos = pega_filenames(num_arqs)
 
-    final = open("final.txt", 'w')
-    #final.writelines('\n'.join(heapq.merge(*conteudo)))
-    print(conteudo)
-    final.writelines('\n'.join(kmerge_manual(*conteudo)))
-
-    final.close()
+    with ExitStack() as stack, open('final.txt', 'w') as final:
+        arquivos = [stack.enter_context(open(arq)) for arq in arquivos]
+        final.writelines(kmerge_manual(*arquivos))
 
 # Versão simplificada de heapq.merge, que recebe uma lista de listas ordenadas
 # e junta tudo num único iterável ordenado
@@ -86,11 +84,11 @@ def kmerge_manual(*conteudo):
         except IndexError:
             return
 
-# Armazena os arquivos de saída abertos (não o conteúdo deles) em uma lista
-def pega_arquivos(num_arqs):
+# Armazena os nomes dos arquivos temporários numa lista
+def pega_filenames(num_arqs):
     arquivos = []
     for i in range(num_arqs-1):
-        arquivos.append(open("outfile_{}.txt".format(i), 'r'))
+        arquivos.append("outfile_{}.txt".format(i))
 
     return arquivos
 
@@ -106,7 +104,7 @@ def main():
               "ex.: python t1.py nome_do_arquivo.txt")
         sys.exit()
 
-    N = int(input("Insira os N bytes de leitura suportados pela memória: "))
+    N = int(input("Insira os N bytes de leitura suportados em memória: "))
 
     mergesort_externo(N, nome_arq)
 
