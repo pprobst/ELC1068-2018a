@@ -51,8 +51,8 @@ def merge(num_arqs):
         arquivos = [stack.enter_context(open(arq)) for arq in arquivos]
         final.writelines(kmerge_manual(*arquivos))
 
-# Versão simplificada de heapq.merge, que recebe uma lista de listas ordenadas
-# e junta tudo num único iterável ordenado
+# Versão simplificada de heapq.merge, que recebe iteráveis ordenados e junta tudo
+# num único iterador sobre os valores ordenados
 def kmerge_manual(*conteudo):
     _heappop, _heapreplace, _StopIteration = heapq.heappop, heapq.heapreplace, StopIteration
     _iter = iter
