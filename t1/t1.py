@@ -9,18 +9,13 @@ from string import punctuation
 def mergesort_externo(N, nome_arq):
     num_arqs = arqs_ordenados(N, nome_arq) # número de arquivos gerados
     merge(num_arqs) # faz o merge dos num_arqs utilizando uma heap queue
-
-    # remove arquivos de saída temporários
-    for item in os.listdir():
-        if item.startswith("out"):
-            os.remove(item)
+    deleta_arquivos("out") # remove os arquivos de saída temporários
 
     print("Fim!")
 
 # Retorna o número de arquivos de saída ordenados gerados pelo arquivo de entrada
 def arqs_ordenados(N, nome_arq):
     i = 0
-
     # grava N bytes nos arquivos de saída, continuando até o fim do arquivo
     # de entrada
     with open(nome_arq, 'r') as f_in:
@@ -33,7 +28,6 @@ def arqs_ordenados(N, nome_arq):
                 qcksort(string_lst)
                 #ultima_palavra = string_lst.pop()
                 string_ordenada = '\n'.join(string_lst)
-                #f_out.write(tira_pontuacao(string_ordenada))
                 f_out.write(string_ordenada)
             i += 1
 
@@ -48,7 +42,7 @@ def merge(num_arqs):
         arquivos = [stack.enter_context(open(arq)) for arq in arquivos]
         final.writelines(kmerge_manual(*arquivos))
 
-# Versão simplificada de heapq.merge, que recebe iteráveis ordenados e junta tudo
+# Versão simplificada de heapq.merge(), que recebe iteráveis ordenados e junta tudo
 # num único iterador sobre os valores ordenados
 def kmerge_manual(*conteudo):
     _heappop, _heapreplace, _StopIteration = heapq.heappop, heapq.heapreplace, StopIteration
@@ -88,6 +82,12 @@ def pega_filenames(num_arqs):
         arquivos.append("outfile_{}.txt".format(i))
 
     return arquivos
+
+# Deleta os arquivos temporários
+def deleta_arquivos(prefixo):
+    for item in os.listdir():
+        if item.startswith(prefixo):
+            os.remove(item)
 
 # Retira os sinais de pontuação de uma string
 def tira_pontuacao(s) :
