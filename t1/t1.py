@@ -19,29 +19,24 @@ def mergesort_externo(N, nome_arq):
 
 # Retorna o número de arquivos de saída ordenados gerados pelo arquivo de entrada
 def arqs_ordenados(N, nome_arq):
-    f_in = open(nome_arq, 'r')
-    fatia = f_in.read(N)
-    ultima_palavra = None
     i = 0
 
     # grava N bytes nos arquivos de saída, continuando até o fim do arquivo
     # de entrada
-    while len(fatia) > 0:
-        with open("outfile_{}.txt".format(i), 'w') as f_out:
-            #if (i != 0):
-            #    fatia = ultima_palavra + fatia
-            fatia = tira_pontuacao(fatia)
-            string_lst = fatia.lower().split()
-            qcksort(string_lst)
-            #ultima_palavra = string_lst.pop()
-            string_ordenada = '\n'.join(string_lst)
-            #f_out.write(tira_pontuacao(string_ordenada))
-            f_out.write(string_ordenada)
+    with open(nome_arq, 'r') as f_in:
+        for fatia in iter(lambda: f_in.read(N), ""):
+            with open("outfile_{}.txt".format(i), 'w') as f_out:
+                #if (i != 0):
+                #    fatia = ultima_palavra + fatia
+                fatia = tira_pontuacao(fatia)
+                string_lst = fatia.lower().split()
+                qcksort(string_lst)
+                #ultima_palavra = string_lst.pop()
+                string_ordenada = '\n'.join(string_lst)
+                #f_out.write(tira_pontuacao(string_ordenada))
+                f_out.write(string_ordenada)
+            i += 1
 
-        i += 1
-        fatia = f_in.read(N+N) # lê mais N bytes a partir do anterior
-
-    f_in.close()
     return i+1
 
 # Junta os arquivos de saída ordenados em um único arquivo final utilizando
@@ -52,8 +47,6 @@ def merge(num_arqs):
     with ExitStack() as stack, open('final.txt', 'w') as final:
         arquivos = [stack.enter_context(open(arq)) for arq in arquivos]
         final.writelines(kmerge_manual(*arquivos))
-        #for line in heapq.merge(*arquivos):
-        #    final.write(line)
 
 # Versão simplificada de heapq.merge, que recebe iteráveis ordenados e junta tudo
 # num único iterador sobre os valores ordenados
