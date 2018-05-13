@@ -19,39 +19,45 @@ def arqs_ordenados(N, nome_arq):
     # grava N bytes nos arquivos de saída, continuando até o fim do arquivo
     # de entrada
     with open(nome_arq, 'r') as f_in:
-        for fatia in iter(lambda: f_in.read(N), ""):
+        for fatia in ler_em_fatias(f_in, N):
             with open("outfile_{}.txt".format(i), 'w') as f_out:
-                #if (i != 0):
-                #    fatia = ultima_palavra + fatia
                 fatia = tira_pontuacao(fatia)
-                string_lst = fatia.lower().split()
-                qcksort(string_lst)
-                #ultima_palavra = string_lst.pop()
-                string_ordenada = '\n'.join(string_lst)
-                f_out.write(string_ordenada)
+                fatia = fatia.lower().split()
+                qcksort(fatia)  # quicksort é um tanto lento!
+                # sorted(fatia) # timsort; mais rápido!
+                fatia = '\n'.join(fatia)
+                f_out.write(fatia)
             i += 1
 
     return i+1
 
+# Lê o arquivo f N a N bytes ("fatia")
+def ler_em_fatias(f, N):
+    while True:
+        fatia = f.read(N)
+        if not fatia:
+            break
+        yield fatia
+
 # Junta os arquivos de saída ordenados em um único arquivo final utilizando
-# fila de prioridade (heap queue)
+# heap queue
 def merge(num_arqs):
     arquivos = pega_filenames(num_arqs)
 
     with ExitStack() as stack, open('final.txt', 'w') as final:
         arquivos = [stack.enter_context(open(arq)) for arq in arquivos]
-        final.writelines(kmerge_manual(*arquivos))
+        final.writelines(hmerge_manual(*arquivos))
 
 # Versão simplificada de heapq.merge(), que recebe iteráveis ordenados e junta tudo
 # num único iterador sobre os valores ordenados
-def kmerge_manual(*conteudo):
+def hmerge_manual(*arquivos):
     _heappop, _heapreplace, _StopIteration = heapq.heappop, heapq.heapreplace, StopIteration
     _iter = iter
 
     h = []
     h_append = h.append
 
-    for itnum, it in enumerate(map(iter, conteudo)):
+    for itnum, it in enumerate(map(iter, arquivos)):
         try:
             next = it.__next__
             h_append([next(), itnum, next])
