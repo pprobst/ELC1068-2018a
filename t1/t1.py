@@ -10,7 +10,6 @@ def mergesort_externo(N, nome_arq):
     num_arqs = arqs_ordenados(N, nome_arq) # número de arquivos gerados
     merge(num_arqs) # faz o merge dos num_arqs utilizando uma heap queue
     deleta_arquivos("out") # remove os arquivos de saída temporários
-
     print("Fim!")
 
 # Retorna o número de arquivos de saída ordenados gerados pelo arquivo de entrada
@@ -24,7 +23,7 @@ def arqs_ordenados(N, nome_arq):
                 fatia = tira_pontuacao(fatia)
                 fatia = fatia.lower().split()
                 qcksort(fatia)  # quicksort é um tanto lento!
-                # sorted(fatia) # timsort; mais rápido!
+                #fatia.sort() # timsort; mais rápido!
                 fatia = '\n'.join(fatia)
                 f_out.write(fatia)
             i += 1
@@ -71,7 +70,10 @@ def hmerge_manual(*arquivos):
         try:
             while True:
                 v, itnum, next = s = h[0] # h[0] -> menor valor da heap
-                yield v # cada yield retorna o menor valor
+                if v[-1] != '\n':
+                    yield v + '\n'
+                else:
+                    yield v # cada yield retorna o menor valor
                 s[0] = next() # StopIteration quando exaustada
                 heapq.heapreplace(h, s) # restaura a heap
 
