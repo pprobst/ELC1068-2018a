@@ -51,32 +51,32 @@ def merge(num_arqs):
 # Versão simplificada de heapq.merge(), que recebe iteráveis ordenados e junta tudo
 # num único iterador sobre os valores ordenados
 def hmerge_manual(*arquivos):
-    _heappop, _heapreplace, _StopIteration = heapq.heappop, heapq.heapreplace, StopIteration
-    _iter = iter
-
     h = []
-    h_append = h.append
 
     for itnum, it in enumerate(map(iter, arquivos)):
+        # itnum -> número da iteração
+        # it -> arquivo
+        # next -> próximo arquivo
+        # next() -> primeiro elemento de cada arquivo
         try:
             next = it.__next__
-            h_append([next(), itnum, next])
+            h.append([next(), itnum, next])
 
-        except _StopIteration:
+        except StopIteration:
             pass
 
-    heapq.heapify(h) # "heapifica" h
+    heapq.heapify(h) # "heapifica" hi
 
     while True:
         try:
             while True:
-                v, itnum, next = s = h[0] # IndexError quando h está vazia
-                yield v
+                v, itnum, next = s = h[0] # h[0] -> menor valor da heap
+                yield v # cada yield retorna o menor valor
                 s[0] = next() # StopIteration quando exaustada
-                _heapreplace(h, s) # restaura a heap
+                heapq.heapreplace(h, s) # restaura a heap
 
-        except _StopIteration:
-            _heappop(h) # remove iterador vazio
+        except StopIteration:
+            heapq.heappop(h) # remove iterador vazio
 
         except IndexError:
             return
@@ -118,6 +118,7 @@ if __name__ == '__main__':
 # https://en.wikipedia.org/wiki/Merge_algorithm
 # https://en.wikipedia.org/wiki/External_sorting
 # https://en.wikipedia.org/wiki/K-way_merge_algorithm
+# http://code.activestate.com/recipes/491285/
 # https://stackoverflow.com/questions/36379360/is-there-a-way-to-simplify-this-n-way-merge-in-python
 # https://stackoverflow.com/questions/1001569/python-class-to-merge-sorted-files-how-can-this-be-improved
 # https://hg.python.org/cpython/file/default/Lib/heapq.py#l314
