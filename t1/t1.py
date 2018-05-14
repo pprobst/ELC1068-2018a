@@ -55,7 +55,7 @@ def hmerge_manual(*arquivos):
     for itnum, it in enumerate(map(iter, arquivos)):
         # itnum -> número da iteração
         # it -> arquivo
-        # next -> próximo arquivo
+        # next -> chamado por next() para retornar o próximo valor
         # next() -> primeiro elemento de cada arquivo
         try:
             next = it.__next__
