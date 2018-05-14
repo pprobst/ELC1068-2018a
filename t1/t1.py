@@ -75,7 +75,7 @@ def hmerge_manual(*arquivos):
                 else:
                     yield v # cada yield retorna o menor valor
                 s[0] = next() # StopIteration quando exaustada
-                heapq.heapreplace(h, s) # restaura a heap
+                heapq.heapreplace(h, s) # restaura a heap com o próximo elem
 
         except StopIteration:
             heapq.heappop(h) # remove iterador vazio
